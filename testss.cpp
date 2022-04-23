@@ -13,33 +13,35 @@ void nhapdate(date &x)
 {
 	printf("dd/mm/yyyy: "); scanf("%d%*c%d%*c%d",&x.ngay,&x.thang,&x.nam);
 }
-struct sv
+typedef struct 
 { char mssv[10];
   char hoten[20];
   char gioitinh[3];
   date ngaysinh;
   char lop[10];
   float dtb;
-};
+}	sv;
 void nhap1sv(sv &x)
 {
 	printf("Mssv: ");scanf("%s",&x.mssv);
 	fflush(stdin); printf("Ho va ten: "),gets(x.hoten);
 	fflush(stdin);
-	printf("Gioi tinh (nam)(nu): "); gets(x.gioitinh);
+	do
+	{	fflush(stdin);
+		printf("Gioi tinh (nam)(nu): "); gets(x.gioitinh);
+	}
+	while (strcmp(x.gioitinh, "nam") && strcmp(x.gioitinh, "nu"));
 	nhapdate(x.ngaysinh);
 	fflush(stdin);printf("Lop: "); scanf("%s",&x.lop);
 	do{ printf("DTB:"); scanf("%f",&x.dtb);
 	} while(x.dtb<0 || x.dtb>10);
 }   
-void nhapSLSV(int &n)
-{
+void nhapSLSV(int &n){
 	do{
 		printf("Nhap so luong sinh vien: "); scanf("%d",&n);
 	} while(n<=0 || n>=100);
 }
-void nhapDSSV(sv x[],int n)
-{
+void nhapDSSV(sv x[],int n){
 	for(int i=0;i<n;i++)
 	{ 
 	   printf("\tNhap sinh vien thu %d:\n",i+1);
@@ -55,9 +57,16 @@ void xuatDSSV(sv x[],int n)
 	    printf("\n\t%-5d \t %-20s \t %-15s \t  %02d/%02d/%04d  \t %-6s \t %-10s \t %-6.1f",i+1, x[i].hoten,x[i].mssv, x[i].ngaysinh.ngay, x[i].ngaysinh.thang, x[i].ngaysinh.nam, x[i].gioitinh, x[i].lop, x[i].dtb);
 }
 void xuatSVdtblonhon8(sv x[],int n)
-{
+{	sv *arr=(sv*)calloc(MAX, sizeof(sv));
+	int a=0;
 	for(int i=0;i<n;i++)
-	 if(x[i].dtb>8) xuat1sv(x[i]);
+	{	if(x[i].dtb>8) 
+			{	*(arr+a)=x[i];
+				a++;
+			}
+	}
+	xuatDSSV(arr,a);
+	free(arr);
 }
 int main()
 {   sv a[MAX];
