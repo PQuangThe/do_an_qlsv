@@ -32,12 +32,14 @@ void nhap1sv(sv &x)
 	do{ printf("DTB:"); scanf("%f",&x.dtb);
 	} while(x.dtb<0 || x.dtb>10);
 }   
-void nhapSLSV(int &n){
+void nhapSLSV(int &n)
+{
 	do{
 		printf("Nhap so luong sinh vien: "); scanf("%d",&n);
 	} while(n<=0 || n>=100);
 }
-void nhapDSSV(sv x[],int n){
+void nhapDSSV(sv x[],int n)
+{
 	for(int i=0;i<n;i++)
 	{ 
 	   printf("\tNhap sinh vien thu %d:\n",i+1);
