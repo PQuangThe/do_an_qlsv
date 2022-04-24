@@ -6,9 +6,9 @@
 #include <string>
 #include <windows.h>
 #define MAX 100
-struct date
+typedef struct
 { int ngay, thang, nam;
-};
+}	date;
 typedef struct 
 { char mssv[10];
   char hoten[20];
@@ -17,24 +17,32 @@ typedef struct
   char lop[10];
   float dtb;
 }	SinhVien;
+int SoLanThucThi();
 void nhapdate(date &x);
 void nhap1sv(SinhVien &x);   
 void nhapSLSV(int &n);
 void nhapDSSV(SinhVien x[],int n);
 void xuatDSSV(SinhVien x[],int n);
 void xuatSVdtblonhon8(SinhVien x[],int n);
+void themSV(SinhVien x[], int &n);
 void TroVe();
+bool InDSvaoFile(SinhVien x[], int n, char name[]);
 int main()
 {   SinhVien sv[MAX];
 	int n=0, SoLuaChon;
+	char name[20];
 	while(1)
-	{	printf("\t\t*************************************************");
+	{	
+		printf("\n\t\t\t[ chuong trinh thuc thi lan %d ]\n", SoLanThucThi());
+		printf("\t\t*************************************************");
 		printf("\n\t\t*%38s		*","CHUONG TRINH QUAN LY SINH VIEN");
 		printf("\n\t\t*************************************************");
+		
 		printf("\n\t\t%26s", "MENU");
-		printf("\n\t\t\t1. tao va nhap danh sach sinh vien");
-		printf("\n\t\t\t2.them sinh vien");
-		printf("\n\t\t\t3.in ds sinh vien");
+		printf("\n\t\t[\t1. Tao va nhap danh sach sinh vien\t]");
+		printf("\n\t\t[\t2. Them sinh vien\t\t\t]");
+		printf("\n\t\t[\t3. In ds sinh vien\t\t\t]");
+		printf("\n\t\t[\t4. Luu ds sinh vien vao file\t\t]");
 		printf("\n\n\nnhap lua chon:");scanf("%d", &SoLuaChon);			//nhap lua chon chuc nang
 		switch(SoLuaChon)
 		{
@@ -45,12 +53,43 @@ int main()
 				printf("\nban da nhap thanh cong");
 				TroVe();
 				break;
+			case 2:
+				system("cls");
+				if(n==0)
+				{	printf("hay tao va nhap 1 danh sach truoc");
+					TroVe();
+					break;
+				}
+				themSV(sv, n);
+				printf("\nthem thanh cong");
+				TroVe();
+				break;
 			case 3:
 				system("cls");
+				if(n==0)
+				{	printf("chua co danh sach, hay tao mot danh sach truoc");
+					TroVe();
+					break;
+				}
 				xuatDSSV(sv,n);
 				TroVe();
 				break;
-				
+			case 4:
+				system("cls");
+				if(n==0)
+				{	printf("chua co danh sach, hay tao mot danh sach truoc");
+					TroVe();
+					break;
+				}
+				printf("nhap ten danh sach: ");
+				scanf("%s", name);
+				strcat(name,".txt\0");
+				if (InDSvaoFile(sv, n, name))
+					printf("\nluu thanh cong");
+				else
+					printf("\nxuat hien loi, luu that bai");
+				TroVe();
+				break;
 		
 		}
 	}
@@ -94,7 +133,9 @@ void xuatDSSV(SinhVien x[],int n)		// ham in ra danh sach sinh vien
 	printf("\n\t %-5s \t %-20s \t %-15s \t %-10s \t %-6s \t %-10s \t %-6s", "STT", "Hoten", "MSSV", "Ngaysinh", "gioitinh", "lop", "DTB");
 	printf("\n\t============================================================================================================");
 	for(int i=0;i<n;i++)
-	    printf("\n\t%-5d \t %-20s \t %-15s \t  %02d/%02d/%04d  \t %-6s \t %-10s \t %-6.1f",i+1, x[i].hoten,x[i].mssv, x[i].ngaysinh.ngay, x[i].ngaysinh.thang, x[i].ngaysinh.nam, x[i].gioitinh, x[i].lop, x[i].dtb);
+	{    printf("\n\t%-5d \t %-20s \t %-15s \t%02d/%02d/%04d  \t %-6s \t %-10s \t %-6.1f",
+		i+1, x[i].hoten,x[i].mssv, x[i].ngaysinh.ngay, x[i].ngaysinh.thang, x[i].ngaysinh.nam, x[i].gioitinh, x[i].lop, x[i].dtb);
+	}
 }
 void xuatSVdtblonhon8(SinhVien x[],int n)
 {	SinhVien *arr=(SinhVien*)calloc(MAX, sizeof(SinhVien));
@@ -107,6 +148,46 @@ void xuatSVdtblonhon8(SinhVien x[],int n)
 	}
 	xuatDSSV(arr,a);
 	free(arr);
+}
+int SoLanThucThi()
+{
+	int dem=1;
+	FILE *f1;
+	f1 = fopen("dem.txt", "r");
+	fscanf(f1, "%d", &dem);
+	fclose(f1);
+	f1=fopen("dem.txt", "w");
+	fprintf(f1, "%d", dem+1);
+	fclose(f1);
+	return dem;
+}
+bool InDSvaoFile(SinhVien x[],int n, char name[])
+{
+	FILE *f2;
+	f2 = fopen(name, "w+");
+	if(f2==NULL)
+		return false;
+	else
+	{	fputs("\n\t============================================================================================================", f2);
+		fprintf(f2,"\n\t %-5s \t %-20s \t %-15s \t %-10s \t %-6s \t %-10s \t %-6s", "STT", "Hoten", "MSSV", "Ngaysinh", "gioitinh", "lop", "DTB");
+		fputs("\n\t============================================================================================================", f2);
+		for(int i=0;i<n;i++)
+		{    fprintf(f2, "\n\t%-5d \t %-20s \t %-15s \t%02d/%02d/%04d  \t %-6s \t %-10s \t %-6.1f",
+				i+1, x[i].hoten,x[i].mssv, x[i].ngaysinh.ngay, x[i].ngaysinh.thang, x[i].ngaysinh.nam, x[i].gioitinh, x[i].lop, x[i].dtb);
+		}
+		
+	}
+	fclose(f2);
+	return true;
+}
+void themSV(SinhVien x[], int &n)
+{	int add;
+	printf("nhap so sinh vien can them vao: "); scanf("%d", &add);
+	for (int i=n; i< n+add; i++)
+	{	printf("\nnhap sinh vien thu %d",i+1);
+		nhap1sv(x[i]);
+	}
+	n+=add;
 }
 void TroVe()			//ham tro ve giao dien chinh
 {	printf("\n\nBam phim bat ky de tiep tuc...");
